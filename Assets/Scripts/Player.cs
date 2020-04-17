@@ -2,32 +2,58 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Player : MonoBehaviour
 {
-
+    /*
+     *  PROGRAMADOR: FELIPE DE ARAUJO BUENO
+     * 
+     * */
    
-    private int vida = 10;
-
+    public int vida = 52;
+    public GameObject explosao;
     public float velocidade;
     private BulletPlayer bullet;
+    public GameObject venceu;
+    private Boss boss;
+    public Image life;
+    public float vidaMax = 90.0f;
+    
+    public float vidaAtual;
 
     // Start is called before the first frame update
-    
+
 
     void Start()
     {
-
-       bullet = GetComponent<BulletPlayer>();
+        vida = 52;
+        bullet = GetComponent<BulletPlayer>();
+        boss = GetComponent<Boss>();
+        vidaAtual = vidaMax;
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (ConfGeral.pausado)
+        {
+            return;
+        }
         Movimentacao();
         ControleVida();
         SpawnTiro();
-       
+        //Vencer();
+
+        if (vidaAtual >= vidaMax)
+        {
+            vidaAtual = vidaMax;
+        }
+
+
+        life.rectTransform.sizeDelta = new Vector2(vidaAtual / vidaMax * 1162, 40);
+
+
     }
 
     private void SpawnTiro()
@@ -44,40 +70,51 @@ public class Player : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform.tag == "BulletEnemy")
+        if(other.transform.tag == "Bullet")
         {
             vida -= 1;
-            Debug.Log("Voce perdeu uma vida");
+            Debug.Log(vida);
+            vidaAtual -= 1;
             
         }
 
         if(other.transform.tag == "ShootBoss")
         {
-            vida -= 4;
-            Debug.Log("voce colidiu com boss");
+            vida -= 3;
+            Debug.Log(vida);
+            vidaAtual -= 3;
+            
         }
 
         if(other.transform.tag == "mina")
         {
             vida -= 1;
             Debug.Log("Voce colidiu com a mina");
+            vidaAtual -= 1;
+        }
+
+        if(other.transform.tag == "inimigo")
+        {
+            vida -= 5;
+            Debug.Log(vida);
+            vidaAtual -= 5;
         }
     }
 
     void ControleVida()
     {
-        if(vida == 0)
+        if(vida <= 0)
         {
-            Destroy(this.gameObject);
-            Debug.Log("Player destruido");
-            /*Invoke("ReloadLevel", 3f);
-            Debug.Log("Jogo reiniciado");*/
+            Instantiate(explosao, transform.position, transform.rotation);
+            GetComponent<AudioSource>().Play();
+            Destroy(this.gameObject, 20);
+            Restart();
         }
     }
 
-    void ReloadLevel()
+    private void Restart()
     {
-        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+        UnityEngine.SceneManagement.SceneManager.LoadScene("FaseEstelar");
     }
 
     void Movimentacao()
@@ -102,4 +139,6 @@ public class Player : MonoBehaviour
             transform.Translate(Vector2.down * velocidade * Time.deltaTime);
         }
     }
+
+    
 }

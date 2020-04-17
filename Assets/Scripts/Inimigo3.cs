@@ -5,15 +5,20 @@ using UnityEngine;
 public class Inimigo3 : MonoBehaviour
 {
     public int vida = 5;
-    
 
+    Collider colid;
     private Bullet bullet;
+    public float distancia;
+    public GameObject explosao;
+    
+    
 
     //public List<Transform> tiro;
 
     // Start is called before the first frame update
     void Start()
     {
+        
         bullet = GetComponent<Bullet>();
 
     }
@@ -22,8 +27,13 @@ public class Inimigo3 : MonoBehaviour
 
     void Update()
     {
-        
-        transform.Translate(new Vector3(0, 10 * Time.deltaTime, 0));
+        if (ConfGeral.pausado)
+        {
+            return;
+        }
+        //transform.Translate(new Vector3(0, -10 * Time.deltaTime, 0));
+        transform.Translate(Vector2.up * 2.5f * Time.deltaTime);
+       
         ControleVida();
         SpawnTiro();
 
@@ -31,29 +41,47 @@ public class Inimigo3 : MonoBehaviour
 
     private void SpawnTiro()
     {
-        if (bullet != null)
-        {
-            bullet.CmdSpawnShell();
-        }
 
+        
+
+        if (bullet != null)
+            {
+                bullet.CmdSpawnShell();
+            }
+        
     }
+
+   
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform.tag == "Bullet")
+        if(other.transform.tag == "Shoot")
         {
             vida -= 1;
-            Debug.Log("O inimigo perder vida");
-            
+            Debug.Log("O inimigo perdeu vida");
+        }
+
+        /*if(other.transform.tag == "MainCamera")
+        { 
+            Debug.Log("inimigo colidiu com a camera");
+        }
+        */
+        if(other.transform.tag == "Player")
+        {
+            Debug.Log("colidiu");
+            Instantiate(explosao, transform.position, transform.rotation);
+            Destroy(this.gameObject);
         }
     }
 
     void ControleVida()
     {
-        if(vida == 0)
+        if(vida <= 0)
         {
-            Destroy(this.gameObject); 
             Debug.Log("Inimigo derrotado");
+            Instantiate(explosao, transform.position, transform.rotation);
+            GetComponent<AudioSource>().Play();
+            Destroy(this.gameObject);
         }
     }   
    

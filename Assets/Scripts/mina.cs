@@ -5,58 +5,57 @@ using UnityEngine;
 public class mina : MonoBehaviour
 {
 
-    Rigidbody inimigo;
-    public GameObject player;
-    Vector2 locPlayer;
-    public float velocidade = 1;
-    float tempo = 11f;
-    bool colid;
-    
+    public Transform target;
+    public float speed = 3f;
+    public GameObject explosao;
+
     public int vida = 2;
+    
 
     // Start is called before the first frame update
     void Start()
     {
-        inimigo = GetComponent<Rigidbody>();
-        
+       
+        target = GameObject.FindGameObjectWithTag("Player").transform;
+
+      
     }
 
     // Update is called once per frame
     void Update()
     {
-        Seguir();
-        CacaPlayer();
-        ControleVida();
+        transform.Translate(Vector2.up * 1.5f * Time.deltaTime);
+
+        if (target.gameObject != null)
+        {
+            transform.position = Vector2.MoveTowards(transform.position, target.position, speed * Time.deltaTime);
+        }
+       
     }
 
     private void OnTriggerEnter(Collider other)
     {
-        if(other.transform.tag == "Bullet")
+        if(other.transform.tag == "Player")
+        {
+            Instantiate(explosao, transform.position, transform.rotation);
+            Destroy(this.gameObject, 3);
+        }
+
+        if(other.transform.tag == "Shoot")
         {
             vida -= 1;
-            Debug.Log("A mina perdeu vida");
-        }
+            Debug.Log("mina perdeu vida");
+            
+        }  
     }
-
-    void ControleVida()
+    public void ControleVida()
     {
-        if(vida == 0)
+        if(vida <= 0)
         {
-            Destroy(this.gameObject);
-            Debug.Log("Mina destruida");
+            Instantiate(explosao, transform.position, transform.rotation);
+            Destroy(this.gameObject, 3);
         }
-    }
-
-    void Seguir()
-    {
-        if(colid == true)
-        {
-            inimigo.transform.position = Vector2.MoveTowards(transform.position, locPlayer, velocidade * Time.deltaTime);
-        }
-    }
-
-    void CacaPlayer()
-    {
-        locPlayer = new Vector2(player.transform.position.x, player.transform.position.y);
     }
 }
+
+   

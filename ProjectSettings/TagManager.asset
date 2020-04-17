@@ -10,6 +10,9 @@ TagManager:
   - inimigo
   - ShootBoss
   - mina
+  - Boss
+  - Barreira
+  - Bar1
   layers:
   - Default
   - TransparentFX

@@ -4,18 +4,25 @@ using UnityEngine;
 
 public class MenuScript : MonoBehaviour
 {
-    private void OnGUI()
+    private void Start()
     {
-        const int buttonWidth = 84;
-        const int buttonHeight = 60;
+        
+    }
 
-        if(GUI.Button(
-            new Rect(Screen.width / 2 - (buttonWidth / 2),
-            (2 * Screen.height / 3) - (buttonWidth / 2),
-            buttonWidth, buttonHeight),
-            "Start"))
-        {
-            Application.LoadLevel("SampleScene");
-        }
+    private void Update()
+    {
+        
+    }
+
+    public void Iniciar()
+    {
+        GetComponent<AudioSource>().Play();
+        UnityEngine.SceneManagement.SceneManager.LoadScene("FaseEstelar");
+    }
+
+    public void Sair()
+    {
+        GetComponent<AudioSource>().Play();
+        Application.Quit();
     }
 }
